@@ -77,9 +77,58 @@ local Button = Tab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-	Name = "Inf stamina",
+	Name = "ESP",
 	Description = nil,
 	Callback = function()
+-- Roblox ESP v3 (работает на Universal Filtering)
+local players = game:GetService("Players")
+local runService = game:GetService("RunService")
+
+local function createESP(player)
+    local character = player.Character
+    if not character then return end
+
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid then return end
+
+    -- Box ESP
+    local box = Instance.new("BoxHandleAdornment")
+    box.Name = player.Name .. "_ESP"
+    box.Adornee = character.HumanoidRootPart
+    box.AlwaysOnTop = true
+    box.ZIndex = 10
+    box.Size = Vector3.new(2, 3, 1)
+    box.Transparency = 0.3
+    box.Color3 = player.TeamColor.Color
+    box.Parent = character.HumanoidRootPart
+
+   
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Text = player.Name
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextScaled = true
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Parent = billboard
+
+    billboard.Parent = character.Head
+end
+
+-- Main loop
+runService.Heartbeat:Connect(function()
+    for _, player in ipairs(players:GetPlayers()) do
+        if player ~= players.LocalPlayer then
+            if player.Character and not player.Character:FindFirstChild("ESP_Initialized") then
+                createESP(player)
+                local tag = Instance.new("BoolValue")
+                tag.Name = "ESP_Initialized"
+                tag.Parent = player.Character
+            end
+        end
+    end
+end)
 		print("Button Pressed.")
 	end
 })
